@@ -36,5 +36,14 @@ CREATE TABLE dish_ingredient (
     CONSTRAINT unique_dish_ingredient UNIQUE (dish_id, ingredient_id)
 );
 
+--changeset akimov:5
+ALTER TABLE dish
+ADD COLUMN dish_type TEXT;
+
+COMMENT ON COLUMN dish.dish_type IS 'Тип блюда (FIRST, SECOND, DESSERT, DRINK, SALAD)';
+
+--changeset akimov:6
+ALTER TABLE dish ALTER COLUMN instructions TYPE TEXT;
+
 
 

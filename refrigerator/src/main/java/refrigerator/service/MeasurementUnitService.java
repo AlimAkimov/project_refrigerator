@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import refrigerator.Exceptions.NotFoundException;
+import refrigerator.Exceptions.ResourceNotFoundException;
 import refrigerator.model.MeasurementUnit;
 import refrigerator.repositories.MeasurementUnitRepository;
 
@@ -28,7 +28,7 @@ public class MeasurementUnitService {
         Optional<MeasurementUnit> measurementUnitIdFromDB = measurementUnitRepository.findById(id);
         if (measurementUnitIdFromDB.isPresent()) {
             return measurementUnitIdFromDB.get();
-        } else throw new NotFoundException("Не найдено");
+        } else throw new ResourceNotFoundException("Не найдено");
     }
 
     public MeasurementUnit findMeasurementUnitByName(String name) {
@@ -36,7 +36,7 @@ public class MeasurementUnitService {
         MeasurementUnit byName = measurementUnitRepository.findByName(name);
         if (byName != null) {
             return byName;
-        } else throw new NotFoundException("MeasurementUnit не найдено");
+        } else throw new ResourceNotFoundException("MeasurementUnit не найдено");
 
     }
 
