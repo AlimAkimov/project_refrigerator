@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import refrigerator.Exceptions.NotFoundException;
+import refrigerator.Exceptions.ResourceNotFoundException;
 import refrigerator.model.Ingredient;
 import refrigerator.repositories.IngredientRepository;
 
@@ -28,7 +28,7 @@ public class IngredientService {
         Optional<Ingredient> ingredientIdFromDB = ingredientRepository.findById(id);
         if (ingredientIdFromDB.isPresent()) {
             return ingredientIdFromDB.get();
-        } else throw new NotFoundException("Не найдено");
+        } else throw new ResourceNotFoundException("Не найдено");
     }
 
     public Ingredient findIngredientByName(String name) {
@@ -36,7 +36,7 @@ public class IngredientService {
         Ingredient byName = ingredientRepository.findByName(name);
         if (byName != null) {
             return byName;
-        } else throw new NotFoundException("Ingredient не найдено");
+        } else throw new ResourceNotFoundException("Ingredient не найдено");
 
     }
 
@@ -52,4 +52,6 @@ public class IngredientService {
         logger.debug("Delete ingredient");
         ingredientRepository.deleteById(id);
     }
+
+
 }
