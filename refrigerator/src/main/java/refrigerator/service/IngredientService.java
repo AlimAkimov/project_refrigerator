@@ -33,7 +33,7 @@ public class IngredientService {
 
     public Ingredient findIngredientByName(String name) {
         logger.debug("Find ingredient by name");
-        Ingredient byName = ingredientRepository.findByName(name);
+        Ingredient byName = ingredientRepository.findByNameIgnoreCase(name);
         if (byName != null) {
             return byName;
         } else throw new ResourceNotFoundException("Ingredient не найдено");
