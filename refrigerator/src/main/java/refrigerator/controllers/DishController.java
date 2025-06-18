@@ -64,6 +64,16 @@ public class DishController {
         return ResponseEntity.ok(ingredientDtoList);
     }
 
+    @GetMapping(path = "/find-dish-by-exact-ingredients")
+    public ResponseEntity<List<DishDto>> findByExactIngredients(@RequestParam List<String> ingredients) {
+        List<DishDto> dishDtos = dishService.searchForFishesByExactMatchOfIngredients(ingredients);
+        return ResponseEntity.ok(dishDtos);
+    }
 
+    @GetMapping(path = "/find-dish-by-partial-ingredients")
+    public ResponseEntity<List<DishDto>> findByPartialIngredients(@RequestParam List<String> ingredients) {
+        List<DishDto> dishDtos = dishService.searchForFishesByPartialIngredients(ingredients);
+        return ResponseEntity.ok(dishDtos);
+    }
 
 }

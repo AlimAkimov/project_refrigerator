@@ -74,7 +74,7 @@ public class IngredientServiceTest {
         String testName = "Test ingredient";
         Ingredient ingredient = new Ingredient();
         ingredient.setName(testName);
-        when(ingredientRepository.findByName(testName)).thenReturn(ingredient);
+        when(ingredientRepository.findByNameIgnoreCase(testName)).thenReturn(ingredient);
 
         //Act
         Ingredient result = ingredientService.findIngredientByName(testName);
@@ -82,7 +82,7 @@ public class IngredientServiceTest {
         //Assert
         assertNotNull(result);
         assertEquals("Test ingredient", result.getName());
-        verify(ingredientRepository, times(1)).findByName(testName);
+        verify(ingredientRepository, times(1)).findByNameIgnoreCase(testName);
     }
 
     @Test

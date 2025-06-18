@@ -5,26 +5,22 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import refrigerator.enums.DifficultyLevel;
 import refrigerator.enums.DishType;
 import refrigerator.model.Dish;
 import refrigerator.model.DishIngredient;
 import refrigerator.model.Ingredient;
 import refrigerator.model.MeasurementUnit;
-import refrigerator.model.dto.MeasurementUnitDto;
 import refrigerator.repositories.DishRepository;
 import refrigerator.repositories.IngredientRepository;
 import refrigerator.repositories.MeasurementUnitRepository;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
@@ -118,7 +114,7 @@ public class ExcelToDatabaseImporter {
         }
 
         // Поиск или создание ингредиента
-        Ingredient ingredient = ingredientRepository.findByName(ingredientName);
+        Ingredient ingredient = ingredientRepository.findByNameIgnoreCase(ingredientName);
         if (ingredient == null) {
             ingredient = new Ingredient();
             ingredient.setName(ingredientName);

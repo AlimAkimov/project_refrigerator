@@ -74,7 +74,7 @@ public class DishServiceTest {
         MeasurementUnit mockUnit = new MeasurementUnit();
         mockUnit.setName("Gram");
 
-        when(ingredientRepository.findByName("Tomato")).thenReturn(mockIngredient);
+        when(ingredientRepository.findByNameIgnoreCase("Tomato")).thenReturn(mockIngredient);
         when(measurementUnitRepository.findByName("Gram")).thenReturn(mockUnit);
         when(dishRepository.save(any(Dish.class))).thenReturn(dish);
 

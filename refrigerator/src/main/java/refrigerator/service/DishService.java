@@ -118,7 +118,7 @@ public class DishService {
         ArrayList<DishIngredient> dishIngredients = new ArrayList<>();
         for (IngredientDto ingredientDto : ingredientDtos) {
             DishIngredient dishIngredient = new DishIngredient();
-            Ingredient ingredientEntity = ingredientRepository.findByName(ingredientDto.getName());
+            Ingredient ingredientEntity = ingredientRepository.findByNameIgnoreCase(ingredientDto.getName());
             String measurementUnitName = ingredientDto.getMeasurementUnitDto().getName();
             Integer amount = ingredientDto.getMeasurementUnitDto().getAmount();
             MeasurementUnit measurementUnitEntity = measurementUnitRepository.findByName(measurementUnitName);
@@ -137,6 +137,40 @@ public class DishService {
         List<IngredientDto> ingredientDtos = dishById.getIngredientDtos();
         return ingredientDtos;
 
+    }
+
+    public List<DishDto> searchForFishesByExactMatchOfIngredients(List<String> ingredients) {
+        List<String> nameIngredients = new ArrayList<>();
+        for (String ingredient : ingredients) {
+            Ingredient byName = ingredientRepository.findByNameIgnoreCase(ingredient);
+            if (byName != null) {
+                nameIngredients.add(byName.getName());
+            } else throw new ResourceNotFoundException("ингредиент " + ingredient + " не найден");
+        }
+        List<Dish> dishByExactIngredients = dishRepository.findByExactIngredients(nameIngredients);
+        List<DishDto> dishDtoByExactIngredients = new ArrayList<>();
+        for (Dish dishByExactIngredient : dishByExactIngredients) {
+            DishDto dishDto = convertDishToDTO(dishByExactIngredient);
+            dishDtoByExactIngredients.add(dishDto);
+        }
+        return dishDtoByExactIngredients;
+    }
+
+    public List<DishDto> searchForFishesByPartialIngredients(List<String> ingredients) {
+        List<String> nameIngredients = new ArrayList<>();
+        for (String ingredient : ingredients) {
+            Ingredient byName = ingredientRepository.findByNameIgnoreCase(ingredient);
+            if (byName != null) {
+                nameIngredients.add(byName.getName());
+            } else throw new ResourceNotFoundException("ингредиент " + ingredient + " не найден");
+        }
+        List<Dish> dishByExactIngredients = dishRepository.findByPartialIngredients(nameIngredients);
+        List<DishDto> dishDtoByExactIngredients = new ArrayList<>();
+        for (Dish dishByExactIngredient : dishByExactIngredients) {
+            DishDto dishDto = convertDishToDTO(dishByExactIngredient);
+            dishDtoByExactIngredients.add(dishDto);
+        }
+        return dishDtoByExactIngredients;
     }
 
 
