@@ -5,7 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import refrigerator.Exceptions.NotFoundException;
+import refrigerator.Exceptions.ResourceNotFoundException;
 import refrigerator.model.Ingredient;
 import refrigerator.repositories.IngredientRepository;
 import refrigerator.service.IngredientService;
@@ -64,7 +64,7 @@ public class IngredientServiceTest {
         when(ingredientRepository.findById(id)).thenReturn(Optional.empty());
 
         //Act && Assert
-        assertThrows(NotFoundException.class, () -> ingredientService.findIngredientById(id));
+        assertThrows(ResourceNotFoundException.class, () -> ingredientService.findIngredientById(id));
         verify(ingredientRepository, times(1)).findById(id);
     }
 
@@ -74,7 +74,7 @@ public class IngredientServiceTest {
         String testName = "Test ingredient";
         Ingredient ingredient = new Ingredient();
         ingredient.setName(testName);
-        when(ingredientRepository.findByName(testName)).thenReturn(ingredient);
+        when(ingredientRepository.findByNameIgnoreCase(testName)).thenReturn(ingredient);
 
         //Act
         Ingredient result = ingredientService.findIngredientByName(testName);
@@ -82,7 +82,7 @@ public class IngredientServiceTest {
         //Assert
         assertNotNull(result);
         assertEquals("Test ingredient", result.getName());
-        verify(ingredientRepository, times(1)).findByName(testName);
+        verify(ingredientRepository, times(1)).findByNameIgnoreCase(testName);
     }
 
     @Test

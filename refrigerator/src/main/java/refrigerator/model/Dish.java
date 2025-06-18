@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import refrigerator.enums.DifficultyLevel;
+import refrigerator.enums.DishType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,11 +32,15 @@ public class Dish {
     @Column(name = "cooking_time")
     private Integer cookingTime;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "difficulty_level")
-    private String difficultyLevel;
+    private DifficultyLevel difficultyLevel;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "dish_type")
+    private DishType dishType;
 
     @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DishIngredient> ingredients = new ArrayList<>();
-
+    private List<DishIngredient> dishIngredients = new ArrayList<>();
 
 }

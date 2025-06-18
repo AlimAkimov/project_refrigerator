@@ -3,8 +3,14 @@ package refrigerator.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import refrigerator.enums.DifficultyLevel;
+import refrigerator.enums.DishType;
 import refrigerator.model.Dish;
+import refrigerator.model.dto.DishDto;
+import refrigerator.model.dto.IngredientDto;
 import refrigerator.service.DishService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/dish")
@@ -14,17 +20,18 @@ public class DishController {
     private DishService dishService;
 
     @PostMapping(path = "/create")
-    public ResponseEntity<Dish> createDish(@RequestBody Dish dish) {
-        return ResponseEntity.ok(dishService.createDish(dish));
+    public ResponseEntity createDish(@RequestBody DishDto dishDto) {
+        dishService.createDish(dishDto);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping(path = "/findByid/{id}")
-    public ResponseEntity<Dish> findDishById(@PathVariable Long id) {
+    public ResponseEntity<DishDto> findDishById(@PathVariable Long id) {
         return ResponseEntity.ok(dishService.findDishById(id));
     }
 
     @GetMapping(path = "/findByName/{name}")
-    public ResponseEntity<Dish> findDishByName(@PathVariable String name) {
+    public ResponseEntity<DishDto> findDishByName(@PathVariable String name) {
         return ResponseEntity.ok(dishService.findDishByName(name));
     }
 
@@ -39,5 +46,34 @@ public class DishController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping(path = "/filter-by-dishType")
+    public ResponseEntity<List<Dish>> filteByDishType(@RequestParam DishType dishType) {
+        List<Dish> dishes = dishService.filterByDishType(dishType);
+        return ResponseEntity.ok(dishes);
+    }
+
+    @GetMapping(path = "/filter-by-difficulty-level")
+    public ResponseEntity<List<Dish>> filteByDifficultyLevel(@RequestParam DifficultyLevel difficultyLevel) {
+        List<Dish> dishes = dishService.filterByDifficultyLevel(difficultyLevel);
+        return ResponseEntity.ok(dishes);
+    }
+
+    @GetMapping(path = "/ingredients-for-a-dish/{id}")
+    public ResponseEntity<List<IngredientDto>> ingredientDtoList(@PathVariable Long id) {
+        List<IngredientDto> ingredientDtoList = dishService.getIngredientsForADish(id);
+        return ResponseEntity.ok(ingredientDtoList);
+    }
+
+    @GetMapping(path = "/find-dish-by-exact-ingredients")
+    public ResponseEntity<List<DishDto>> findByExactIngredients(@RequestParam List<String> ingredients) {
+        List<DishDto> dishDtos = dishService.searchForFishesByExactMatchOfIngredients(ingredients);
+        return ResponseEntity.ok(dishDtos);
+    }
+
+    @GetMapping(path = "/find-dish-by-partial-ingredients")
+    public ResponseEntity<List<DishDto>> findByPartialIngredients(@RequestParam List<String> ingredients) {
+        List<DishDto> dishDtos = dishService.searchForFishesByPartialIngredients(ingredients);
+        return ResponseEntity.ok(dishDtos);
+    }
 
 }

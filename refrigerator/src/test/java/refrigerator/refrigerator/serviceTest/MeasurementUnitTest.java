@@ -5,7 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import refrigerator.Exceptions.NotFoundException;
+import refrigerator.Exceptions.ResourceNotFoundException;
 import refrigerator.model.MeasurementUnit;
 import refrigerator.repositories.MeasurementUnitRepository;
 import refrigerator.service.MeasurementUnitService;
@@ -63,7 +63,7 @@ public class MeasurementUnitTest {
         when(measurementUnitRepository.findById(id)).thenReturn(Optional.empty());
 
         //Act && Assert
-        assertThrows(NotFoundException.class, () -> measurementUnitService.findMeasurementUnitById(id));
+        assertThrows(ResourceNotFoundException.class, () -> measurementUnitService.findMeasurementUnitById(id));
         verify(measurementUnitRepository, times(1)).findById(id);
     }
 
