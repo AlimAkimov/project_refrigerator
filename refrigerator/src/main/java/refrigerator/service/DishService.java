@@ -72,14 +72,26 @@ public class DishService {
         dishRepository.deleteById(id);
     }
 
-    public List<Dish> filterByDishType(DishType dishType) {
+    public List<DishDto> filterByDishType(DishType dishType) {
         logger.debug("filter by dish type");
-        return dishRepository.findByDishType(dishType);
+        List<DishDto> dishDtos = new ArrayList<>();
+        List<Dish> byDishType = dishRepository.findByDishType(dishType);
+        for (Dish dish : byDishType) {
+            DishDto dishDto = convertDishToDTO(dish);
+            dishDtos.add(dishDto);
+        }
+        return dishDtos;
     }
 
-    public List<Dish> filterByDifficultyLevel(DifficultyLevel difficultyLevel) {
+    public List<DishDto> filterByDifficultyLevel(DifficultyLevel difficultyLevel) {
         logger.debug("filter by difficulty level");
-        return dishRepository.findByDifficultyLevel(difficultyLevel);
+        List<DishDto> dishDtos = new ArrayList<>();
+        List<Dish> byDifficultyLevel = dishRepository.findByDifficultyLevel(difficultyLevel);
+        for (Dish dish : byDifficultyLevel) {
+            DishDto dishDto = convertDishToDTO(dish);
+            dishDtos.add(dishDto);
+        }
+        return dishDtos;
     }
 
     private DishDto convertDishToDTO(Dish dish) {

@@ -197,14 +197,14 @@ public class DishServiceTest {
         //Arrange
         ArrayList<Dish> dishes = new ArrayList<>();
         Dish dish = new Dish();
-        DishType dishType = DishType.FIRST;
+        DishType dishType = DishType.BREAKFAST;
         dish.setDishType(dishType);
         dishes.add(dish);
 
         when(dishRepository.findByDishType(dishType)).thenReturn(dishes);
 
         //Act
-        List<Dish> result = dishService.filterByDishType(dishType);
+        List<DishDto> result = dishService.filterByDishType(dishType);
 
         //Assert
         assertNotNull(result);
@@ -224,7 +224,7 @@ public class DishServiceTest {
         when(dishRepository.findByDifficultyLevel(difficultyLevel)).thenReturn(dishes);
 
         //Act
-        List<Dish> result = dishService.filterByDifficultyLevel(difficultyLevel);
+        List<DishDto> result = dishService.filterByDifficultyLevel(difficultyLevel);
 
         //Assert
         assertNotNull(result);
