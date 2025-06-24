@@ -7,8 +7,6 @@ public enum DishType {
     BREAKFAST("Завтрак"),
     DINNER("Ужин"),
     LUNCH("Обед"),
-    FIRST("Первое блюдо"),
-    SECOND("Второе блюдо"),
     DESSERT("Десерт"),
     DRINK("Напиток"),
     SALAD("Салат"),

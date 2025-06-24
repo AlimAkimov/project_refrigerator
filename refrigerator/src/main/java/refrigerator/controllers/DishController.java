@@ -1,5 +1,6 @@
 package refrigerator.controllers;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,12 +26,12 @@ public class DishController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(path = "/findByid/{id}")
+    @GetMapping(path = "/find-by-id/{id}")
     public ResponseEntity<DishDto> findDishById(@PathVariable Long id) {
         return ResponseEntity.ok(dishService.findDishById(id));
     }
 
-    @GetMapping(path = "/findByName/{name}")
+    @GetMapping(path = "/find-by-name/{name}")
     public ResponseEntity<DishDto> findDishByName(@PathVariable String name) {
         return ResponseEntity.ok(dishService.findDishByName(name));
     }
@@ -47,14 +48,14 @@ public class DishController {
     }
 
     @GetMapping(path = "/filter-by-dishType")
-    public ResponseEntity<List<Dish>> filteByDishType(@RequestParam DishType dishType) {
-        List<Dish> dishes = dishService.filterByDishType(dishType);
+    public ResponseEntity<List<DishDto>> filteByDishType(@RequestParam DishType dishType) {
+        List<DishDto> dishes = dishService.filterByDishType(dishType);
         return ResponseEntity.ok(dishes);
     }
 
     @GetMapping(path = "/filter-by-difficulty-level")
-    public ResponseEntity<List<Dish>> filteByDifficultyLevel(@RequestParam DifficultyLevel difficultyLevel) {
-        List<Dish> dishes = dishService.filterByDifficultyLevel(difficultyLevel);
+    public ResponseEntity<List<DishDto>> filteByDifficultyLevel(@RequestParam DifficultyLevel difficultyLevel) {
+        List<DishDto> dishes = dishService.filterByDifficultyLevel(difficultyLevel);
         return ResponseEntity.ok(dishes);
     }
 
