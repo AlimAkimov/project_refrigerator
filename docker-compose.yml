@@ -1,0 +1,42 @@
+services:
+  app:
+    image: reff:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/Refrigerator
+      - SPRING_DATASOURCE_USERNAME=OwnerRefrigerator
+      - SPRING_DATASOURCE_PASSWORD=898989
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=none
+      - SPRING_JPA_SHOW_SQL=true
+      - SPRING_LIQUIBASE_ENABLED=true
+    networks:
+      - app-network
+  db:
+    image: postgres:16
+    environment:
+      - POSTGRES_DB=Refrigerator
+      - POSTGRES_USER=OwnerRefrigerator
+      - POSTGRES_PASSWORD=898989
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U OwnerRefrigerator"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - app-network
+volumes:
+  postgres_data:
+networks:
+  app-network:
+    driver: bridge
