@@ -1,0 +1,39 @@
+services:
+  postgres_db:
+    image: postgres:16-alpine
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_DB: refrigerator
+      POSTGRES_USER: OwnerRefrigerator
+      POSTGRES_PASSWORD: 898989
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U OwnerRefrigerator -d refrigerator"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  app:
+    build: .
+    container_name: refrigerator_app
+    restart: always
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_db:5432/refrigerator
+      SPRING_DATASOURCE_USERNAME: OwnerRefrigerator
+      SPRING_DATASOURCE_PASSWORD: 898989
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:
+
+

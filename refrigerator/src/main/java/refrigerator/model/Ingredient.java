@@ -23,7 +23,6 @@ public class Ingredient {
     @Column(name = "description")
     private String description;
 
-    //TODO сделать ENUM
     @Column(name = "category")
     private String category;
 

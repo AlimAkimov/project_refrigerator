@@ -7,9 +7,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import refrigerator.Exceptions.ResourceNotFoundException;
 import refrigerator.model.Ingredient;
+import refrigerator.model.dto.IngredientDto;
 import refrigerator.repositories.IngredientRepository;
 import refrigerator.service.IngredientService;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -25,15 +27,13 @@ public class IngredientServiceTest {
 
     @Test
     void create_ShouldReturnSavedIngredient() {
-        //Arrange
+
         Ingredient ingredient = new Ingredient();
         ingredient.setName("testIngredient");
         when(ingredientRepository.save(ingredient)).thenReturn(ingredient);
 
-        //Act
         Ingredient result = ingredientService.createIngredient(ingredient);
 
-        //Assert
         assertNotNull(result);
         assertEquals("testIngredient", result.getName());
         verify(ingredientRepository, timeout(1)).save(ingredient);
@@ -41,93 +41,102 @@ public class IngredientServiceTest {
     }
 
     @Test
-    void findIngredientById_WhenExists_ShouldReturnIngredient() {
-        //Arrange
-        Long id = 3L;
+    void findIngredientById_WhenExists_ShouldReturnIngredientDto() {
+        Long id = 1L;
+        String name = "Test Ingredient";
+        String category = "Test Category";
+
         Ingredient ingredient = new Ingredient();
         ingredient.setId(id);
+        ingredient.setName(name);
+        ingredient.setCategory(category);
+
         when(ingredientRepository.findById(id)).thenReturn(Optional.of(ingredient));
 
-        //Act
-        Ingredient resul = ingredientService.findIngredientById(id);
+        IngredientDto result = ingredientService.findIngredientById(id);
 
-        //Assert
-        assertNotNull(resul);
-        assertEquals(3L, resul.getId());
+        assertNotNull(result);
+        assertEquals(name, result.getName());
+        assertEquals(category, result.getCategory());
         verify(ingredientRepository, times(1)).findById(id);
     }
 
     @Test
     void findIngredientById_WhenNotExists_ShouldThrowException() {
-        //Arrange
         Long id = 999L;
         when(ingredientRepository.findById(id)).thenReturn(Optional.empty());
 
-        //Act && Assert
-        assertThrows(ResourceNotFoundException.class, () -> ingredientService.findIngredientById(id));
+        assertThrows(ResourceNotFoundException.class, () -> {
+            ingredientService.findIngredientById(id);
+        });
+
         verify(ingredientRepository, times(1)).findById(id);
     }
 
     @Test
     void findIngredientByName_ShouldReturnIngredient() {
-        //Arrange
         String testName = "Test ingredient";
         Ingredient ingredient = new Ingredient();
         ingredient.setName(testName);
         when(ingredientRepository.findByNameIgnoreCase(testName)).thenReturn(ingredient);
 
-        //Act
-        Ingredient result = ingredientService.findIngredientByName(testName);
+        IngredientDto result = ingredientService.findIngredientByName(testName);
 
-        //Assert
         assertNotNull(result);
         assertEquals("Test ingredient", result.getName());
         verify(ingredientRepository, times(1)).findByNameIgnoreCase(testName);
     }
 
     @Test
-    void editIngredient_WhenExists_ShouldReturnUpdatedIngredient() {
-        //Arrange
-        Ingredient ingredient = new Ingredient();
-        ingredient.setId(1l);
-        ingredient.setName("Update ingredient");
-        when(ingredientRepository.findById(ingredient.getId())).thenReturn(Optional.of(ingredient));
-        when(ingredientRepository.save(ingredient)).thenReturn(ingredient);
+    void editIngredient_WhenIngredientExists_ShouldUpdateAndReturnDto() {
+        Long id = 1L;
+        IngredientDto inputDto = new IngredientDto();
+        inputDto.setName("New Name");
+        inputDto.setCategory("New Category");
+        inputDto.setDescription("New Description");
 
-        //Act
-        Ingredient result = ingredientService.editIngredient(ingredient);
+        Ingredient existingIngredient = new Ingredient();
+        existingIngredient.setId(id);
+        existingIngredient.setName("Old Name");
+        existingIngredient.setCategory("Old Category");
+        existingIngredient.setDescription("Old Description");
+        existingIngredient.setDishes(new ArrayList<>());
 
-        //Assert
+        when(ingredientRepository.findById(id)).thenReturn(Optional.of(existingIngredient));
+        when(ingredientRepository.save(any(Ingredient.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        IngredientDto result = ingredientService.editIngredient(id, inputDto);
+
         assertNotNull(result);
-        assertEquals("Update ingredient", result.getName());
-        verify(ingredientRepository, times(1)).findById(ingredient.getId());
-        verify(ingredientRepository, times(1)).save(ingredient);
+        assertEquals(inputDto.getName(), result.getName());
+        assertEquals(inputDto.getCategory(), result.getCategory());
+        assertEquals(inputDto.getDescription(), result.getDescription());
+
+        verify(ingredientRepository).findById(id);
+        verify(ingredientRepository).save(existingIngredient);
     }
 
     @Test
-    void editIngredient_WhenNotExists_ShouldThrowException() {
-        //Arrange
-        Ingredient ingredient = new Ingredient();
-        ingredient.setId(999L);
-        when(ingredientRepository.findById(ingredient.getId())).thenReturn(Optional.empty());
+    void editIngredient_WhenIngredientNotExists_ShouldThrowException() {
+        Long id = 1L;
+        IngredientDto inputDto = new IngredientDto();
 
-        //Act && Assert
-        assertThrows(RuntimeException.class, () -> ingredientService.editIngredient(ingredient));
-        verify(ingredientRepository, times(1)).findById(ingredient.getId());
+        when(ingredientRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> {
+            ingredientService.editIngredient(id, inputDto);
+        });
+
         verify(ingredientRepository, never()).save(any());
-
     }
 
     @Test
     void deleteDishById_ShouldCallRepository() {
-        //Arrange
         Long id = 1L;
         doNothing().when(ingredientRepository).deleteById(id);
 
-        //Act
         ingredientService.deleteIngredientById(id);
 
-        //Assert
         verify(ingredientRepository, times(1)).deleteById(id);
     }
 

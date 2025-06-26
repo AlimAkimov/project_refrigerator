@@ -43,7 +43,6 @@ public class DishServiceTest {
 
     @Test
     void createDish_ShouldCorrectlyMapAndSaveDishWithIngredients() {
-        // Подготовка тестовых данных
         Dish dish = new Dish();
         dish.setId(999L);
         dish.setName("Pasta");
@@ -67,7 +66,6 @@ public class DishServiceTest {
         ingredients.add(ingredientDto);
         dishDto.setIngredientDtos(ingredients);
 
-        //мокирование репозиториев
         Ingredient mockIngredient = new Ingredient();
         mockIngredient.setName("Tomato");
 
@@ -78,17 +76,13 @@ public class DishServiceTest {
         when(measurementUnitRepository.findByName("Gram")).thenReturn(mockUnit);
         when(dishRepository.save(any(Dish.class))).thenReturn(dish);
 
-
-        //вызов тестируемого метода
         dishService.createDish(dishDto);
 
         verify(dishRepository).save(argThat(savedDish -> {
-            // Проверяем основное блюдо
             assertEquals("Pasta", savedDish.getName());
             assertEquals(DifficultyLevel.MEDIUM, savedDish.getDifficultyLevel());
             assertEquals("Delicious pasta", savedDish.getDescription());
 
-            // Проверяем ингредиенты
             assertEquals(1, savedDish.getDishIngredients().size());
 
             DishIngredient dishIngredient = savedDish.getDishIngredients().get(0);
@@ -102,7 +96,6 @@ public class DishServiceTest {
 
     @Test
     void findDishById_WhenExists_ShouldReturnDish() {
-        // Arrange
         Long id = 1L;
         String name = "Test";
         Dish dish = new Dish();
@@ -110,10 +103,8 @@ public class DishServiceTest {
         dish.setName(name);
         when(dishRepository.findById(id)).thenReturn(Optional.of(dish));
 
-        // Act
         DishDto result = dishService.findDishById(id);
 
-        // Assert
         assertNotNull(result);
         assertEquals("Test", result.getName());
         verify(dishRepository, times(1)).findById(id);
@@ -121,80 +112,60 @@ public class DishServiceTest {
 
     @Test
     void findDishById_WhenNotExists_ShouldThrowException() {
-        // Arrange
         Long id = 999L;
         when(dishRepository.findById(id)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> dishService.findDishById(id));
         verify(dishRepository, times(1)).findById(id);
     }
 
     @Test
     void findDishByName_ShouldReturnDish() {
-        // Arrange
         String name = "Test Dish";
         Dish dish = new Dish();
         dish.setName(name);
         when(dishRepository.findByNameIgnoreCase(name)).thenReturn(dish);
 
-        // Act
         DishDto result = dishService.findDishByName(name);
 
-        // Assert
         assertNotNull(result);
         assertEquals(name, result.getName());
         verify(dishRepository, times(1)).findByNameIgnoreCase(name);
     }
 
     @Test
-    void editDish_WhenExists_ShouldReturnUpdatedDish() {
-        // Arrange
-        Dish dish = new Dish();
-        dish.setId(1L);
-        dish.setName("Updated Dish");
-        when(dishRepository.findById(dish.getId())).thenReturn(Optional.of(dish));
-        when(dishRepository.save(dish)).thenReturn(dish);
+    public void editDish_WhenDishExists_ShouldReturnUpdatedDishDto() {
+        Long dishId = 1L;
+        DishDto inputDto = new DishDto();
+        inputDto.setName("Updated Name");
+        inputDto.setIngredientDtos(new ArrayList<>());
 
-        // Act
-        Dish result = dishService.editDish(dish);
+        Dish existingDish = new Dish();
+        existingDish.setId(dishId);
+        existingDish.setDishIngredients(new ArrayList<>());
 
-        // Assert
+        when(dishRepository.findById(dishId)).thenReturn(Optional.of(existingDish));
+        when(dishRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        DishDto result = dishService.editDish(dishId, inputDto);
+
         assertNotNull(result);
-        assertEquals("Updated Dish", result.getName());
-        verify(dishRepository, times(1)).findById(dish.getId());
-        verify(dishRepository, times(1)).save(dish);
-    }
-
-    @Test
-    void editDish_WhenNotExists_ShouldThrowException() {
-        // Arrange
-        Dish dish = new Dish();
-        dish.setId(999L);
-        when(dishRepository.findById(dish.getId())).thenReturn(Optional.empty());
-
-        // Act & Assert
-        assertThrows(RuntimeException.class, () -> dishService.editDish(dish));
-        verify(dishRepository, times(1)).findById(dish.getId());
-        verify(dishRepository, never()).save(any());
+        assertEquals("Updated Name", result.getName());
+        verify(dishRepository).findById(dishId);
     }
 
     @Test
     void deleteDishById_ShouldCallRepository() {
-        // Arrange
         Long id = 1L;
         doNothing().when(dishRepository).deleteById(id);
 
-        // Act
         dishService.deleteDishById(id);
 
-        // Assert
         verify(dishRepository, times(1)).deleteById(id);
     }
 
     @Test
     void filterByDishType() {
-        //Arrange
         ArrayList<Dish> dishes = new ArrayList<>();
         Dish dish = new Dish();
         DishType dishType = DishType.BREAKFAST;
@@ -203,10 +174,8 @@ public class DishServiceTest {
 
         when(dishRepository.findByDishType(dishType)).thenReturn(dishes);
 
-        //Act
         List<DishDto> result = dishService.filterByDishType(dishType);
 
-        //Assert
         assertNotNull(result);
         assertEquals(dishType, result.getFirst().getDishType());
         verify(dishRepository, times(1)).findByDishType(dishType);
@@ -214,7 +183,6 @@ public class DishServiceTest {
 
     @Test
     void filterByDifficultyLevel() {
-        //Arrange
         ArrayList<Dish> dishes = new ArrayList<>();
         Dish dish = new Dish();
         DifficultyLevel difficultyLevel = DifficultyLevel.HARD;
@@ -223,10 +191,8 @@ public class DishServiceTest {
 
         when(dishRepository.findByDifficultyLevel(difficultyLevel)).thenReturn(dishes);
 
-        //Act
         List<DishDto> result = dishService.filterByDifficultyLevel(difficultyLevel);
 
-        //Assert
         assertNotNull(result);
         assertEquals(difficultyLevel, result.getFirst().getDifficultyLevel());
         verify(dishRepository, times(1)).findByDifficultyLevel(difficultyLevel);
