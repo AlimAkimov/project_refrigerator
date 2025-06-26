@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import refrigerator.model.MeasurementUnit;
+import refrigerator.model.dto.MeasurementUnitDto;
 import refrigerator.service.MeasurementUnitService;
 
 @RestController
@@ -19,18 +20,20 @@ public class MeasurementUnitController {
     }
 
     @GetMapping(path = "/findByid/{id}")
-    public ResponseEntity<MeasurementUnit> findMeasurementUnitById(@PathVariable Long id) {
+    public ResponseEntity<MeasurementUnitDto> findMeasurementUnitById(@PathVariable Long id) {
         return ResponseEntity.ok(measurementUnitService.findMeasurementUnitById(id));
     }
 
     @GetMapping(path = "/findByName/{name}")
-    public ResponseEntity<MeasurementUnit> findMeasurementUnitByName(@PathVariable String name) {
+    public ResponseEntity<MeasurementUnitDto> findMeasurementUnitByName(@PathVariable String name) {
         return ResponseEntity.ok(measurementUnitService.findMeasurementUnitByName(name));
     }
 
-    @PutMapping(path = "/edit")
-    public ResponseEntity<MeasurementUnit> editMeasurementUnit(@RequestBody MeasurementUnit measurementUnit) {
-        return ResponseEntity.ok(measurementUnitService.editMeasurementUnit(measurementUnit));
+    @PutMapping(path = "/edit/{id}")
+    public ResponseEntity<MeasurementUnitDto> editMeasurementUnit(
+            @PathVariable Long id,
+            @RequestBody MeasurementUnitDto measurementUnitDto) {
+        return ResponseEntity.ok(measurementUnitService.editMeasurementUnit(id, measurementUnitDto));
     }
 
     @DeleteMapping(path = "/delete/{id}")

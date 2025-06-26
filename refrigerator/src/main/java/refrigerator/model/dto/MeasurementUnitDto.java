@@ -17,4 +17,6 @@ public class MeasurementUnitDto {
     private String name;
 
     private Integer amount;
+
+    private String abbreviation;
 }

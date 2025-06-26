@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import refrigerator.model.Dish;
 import refrigerator.model.Ingredient;
+import refrigerator.model.dto.IngredientDto;
 import refrigerator.service.IngredientService;
 
 @RestController
@@ -20,19 +21,20 @@ public class IngredientController {
         return ResponseEntity.ok(ingredientService.createIngredient(ingredient));
     }
 
-    @GetMapping(path = "/findByid/{id}")
-    public ResponseEntity<Ingredient> findIngredientById(@PathVariable Long id) {
+    @GetMapping(path = "/find-by-id/{id}")
+    public ResponseEntity<IngredientDto> findIngredientById(@PathVariable Long id) {
         return ResponseEntity.ok(ingredientService.findIngredientById(id));
     }
 
     @GetMapping(path = "/findByName/{name}")
-    public ResponseEntity<Ingredient> findIngredientByName(@PathVariable String name) {
+    public ResponseEntity<IngredientDto> findIngredientByName(@PathVariable String name) {
         return ResponseEntity.ok(ingredientService.findIngredientByName(name));
     }
 
-    @PutMapping(path = "/edit")
-    public ResponseEntity<Ingredient> editIngredient(@RequestBody Ingredient ingredient) {
-        return ResponseEntity.ok(ingredientService.editIngredient(ingredient));
+    @PutMapping(path = "/edit/{id}")
+    public ResponseEntity<IngredientDto> editIngredient(@PathVariable Long id,
+                                                        @RequestBody IngredientDto ingredientDto) {
+        return ResponseEntity.ok(ingredientService.editIngredient(id, ingredientDto));
     }
 
     @DeleteMapping(path = "/delete/{id}")

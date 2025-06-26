@@ -40,7 +40,7 @@ public class Dish {
     @Column(name = "dish_type")
     private DishType dishType;
 
-    @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "dish", cascade = {CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
     private List<DishIngredient> dishIngredients = new ArrayList<>();
 
 }

@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import refrigerator.Exceptions.ResourceNotFoundException;
 import refrigerator.model.MeasurementUnit;
+import refrigerator.model.dto.MeasurementUnitDto;
 import refrigerator.repositories.MeasurementUnitRepository;
 import refrigerator.service.MeasurementUnitService;
 
@@ -26,94 +27,106 @@ public class MeasurementUnitTest {
 
     @Test
     void createMeasurementUnit_ShouldReturnSavedMeasurementUnit() {
-        //Arrange
         MeasurementUnit measurementUnit = new MeasurementUnit();
         when(measurementUnitRepository.save(measurementUnit)).thenReturn(measurementUnit);
 
-        //Act
         MeasurementUnit result = measurementUnitService.createMeasurementUnit(measurementUnit);
 
-        //Assert
         assertNotNull(result);
         assertEquals(measurementUnit, result);
         verify(measurementUnitRepository, times(1)).save(measurementUnit);
     }
 
     @Test
-    void findMeasurementUnitById_WhenExists_ShouldReturnMeasurementUnit() {
-        //Arrange
+    void findMeasurementUnitById_WhenExists_ShouldReturnDto() {
         Long id = 1L;
-        MeasurementUnit measurementUnit = new MeasurementUnit();
-        measurementUnit.setId(id);
-        when(measurementUnitRepository.findById(id)).thenReturn(Optional.of(measurementUnit));
+        String unitName = "Kilogram";
 
-        //Act
-        MeasurementUnit result = measurementUnitService.findMeasurementUnitById(id);
+        MeasurementUnit mockUnit = new MeasurementUnit();
+        mockUnit.setId(id);
+        mockUnit.setName(unitName);
 
-        //Assert
+        when(measurementUnitRepository.findById(id))
+                .thenReturn(Optional.of(mockUnit));
+
+        MeasurementUnitDto result = measurementUnitService.findMeasurementUnitById(id);
+
         assertNotNull(result);
-        assertEquals(id, result.getId());
+        assertEquals(unitName, result.getName());
         verify(measurementUnitRepository, times(1)).findById(id);
     }
 
     @Test
     void findMeasurementUnitById_WhenNotExists_ShouldThrowException() {
-        //Arrange
         Long id = 999L;
-        when(measurementUnitRepository.findById(id)).thenReturn(Optional.empty());
+        when(measurementUnitRepository.findById(id))
+            .thenReturn(Optional.empty());
 
-        //Act && Assert
-        assertThrows(ResourceNotFoundException.class, () -> measurementUnitService.findMeasurementUnitById(id));
+        assertThrows(ResourceNotFoundException.class, () -> {
+            measurementUnitService.findMeasurementUnitById(id);
+        });
         verify(measurementUnitRepository, times(1)).findById(id);
     }
 
     @Test
-    void findMeasurementUnitByName_WhenExists_ShouldReturnMeasurementUnit() {
-        //Arrange
-        String name = "Test name";
-        MeasurementUnit measurementUnit = new MeasurementUnit();
-        measurementUnit.setName(name);
-        when(measurementUnitRepository.findByName(name)).thenReturn(measurementUnit);
+    void findMeasurementUnitByName_WhenExists_ReturnsDto() {
+        String name = "Liter";
+        MeasurementUnit mockUnit = new MeasurementUnit();
+        mockUnit.setName(name);
+        mockUnit.setAbbreviation("L");
 
-        //Act
-        MeasurementUnit result = measurementUnitService.findMeasurementUnitByName(name);
+        when(measurementUnitRepository.findByName(name)).thenReturn(mockUnit);
 
-        //Assert
+        MeasurementUnitDto result = measurementUnitService.findMeasurementUnitByName(name);
+
         assertNotNull(result);
-        assertEquals("Test name", result.getName());
-        verify(measurementUnitRepository, times(1)).findByName(name);
+        assertEquals(name, result.getName());
+        verify(measurementUnitRepository).findByName(name);
     }
 
     @Test
-    void editMeasurementUnit_WhenExists_ShouldReturnUpdatedIngredient() {
-        //Arrange
-        MeasurementUnit measurementUnit = new MeasurementUnit();
-        measurementUnit.setId(1L);
-        measurementUnit.setName("test name");
-        when(measurementUnitRepository.findById(measurementUnit.getId())).thenReturn(Optional.of(measurementUnit));
-        when(measurementUnitRepository.save(measurementUnit)).thenReturn(measurementUnit);
+    void editMeasurementUnit_WhenExists_ShouldUpdateAndReturnDto() {
+        Long id = 1L;
+        MeasurementUnitDto inputDto = new MeasurementUnitDto();
+        inputDto.setName("Updated Kilogram");
+        inputDto.setAbbreviation("kg-upd");
 
+        MeasurementUnit existingUnit = new MeasurementUnit();
+        existingUnit.setId(id);
+        existingUnit.setName("Kilogram");
+        existingUnit.setAbbreviation("kg");
 
-        //Act
-        MeasurementUnit result = measurementUnitService.editMeasurementUnit(measurementUnit);
+        when(measurementUnitRepository.findById(id))
+                .thenReturn(Optional.of(existingUnit));
+        when(measurementUnitRepository.save(any(MeasurementUnit.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
-        //Assert
+        MeasurementUnitDto result = measurementUnitService.editMeasurementUnit(id, inputDto);
+
         assertNotNull(result);
-        assertEquals("test name", result.getName());
-        verify(measurementUnitRepository, times(1)).save(measurementUnit);
-        verify(measurementUnitRepository, times(1)).findById(result.getId());
+        assertEquals(inputDto.getName(), result.getName());
+        assertEquals(inputDto.getAbbreviation(), result.getAbbreviation());
+
+        verify(measurementUnitRepository).findById(id);
+        verify(measurementUnitRepository).save(existingUnit);
+
+        assertEquals("Updated Kilogram", existingUnit.getName());
+        assertEquals("kg-upd", existingUnit.getAbbreviation());
     }
 
     @Test
     void editMeasurementUnit_WhenNotExists_ShouldThrowException() {
-        //Arrange
-        MeasurementUnit measurementUnit = new MeasurementUnit();
-        measurementUnit.setId(999L);
-        when(measurementUnitRepository.findById(measurementUnit.getId())).thenReturn(Optional.empty());
+        Long id = 999L;
+        MeasurementUnitDto inputDto = new MeasurementUnitDto();
 
-        //Act && Assert
-        assertThrows(RuntimeException.class, () -> measurementUnitService.editMeasurementUnit(measurementUnit));
-        verify(measurementUnitRepository, times(1)).findById(measurementUnit.getId());
+        when(measurementUnitRepository.findById(id))
+                .thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> {
+            measurementUnitService.editMeasurementUnit(id, inputDto);
+        });
+
+        verify(measurementUnitRepository).findById(id);
         verify(measurementUnitRepository, never()).save(any());
     }
 

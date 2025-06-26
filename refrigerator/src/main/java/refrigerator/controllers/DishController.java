@@ -21,7 +21,7 @@ public class DishController {
     private DishService dishService;
 
     @PostMapping(path = "/create")
-    public ResponseEntity createDish(@RequestBody DishDto dishDto) {
+    public ResponseEntity<DishDto> createDish(@RequestBody DishDto dishDto) {
         dishService.createDish(dishDto);
         return ResponseEntity.ok().build();
     }
@@ -36,9 +36,11 @@ public class DishController {
         return ResponseEntity.ok(dishService.findDishByName(name));
     }
 
-    @PutMapping(path = "/edit")
-    public ResponseEntity<Dish> editDish(@RequestBody Dish dish) {
-        return ResponseEntity.ok(dishService.editDish(dish));
+    @PatchMapping(path = "/edit/{id}")
+    public ResponseEntity<DishDto> editDish(
+            @PathVariable Long id,
+            @RequestBody DishDto dishDto) {
+        return ResponseEntity.ok(dishService.editDish(id, dishDto));
     }
 
     @DeleteMapping(path = "/delete/{id}")
