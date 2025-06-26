@@ -46,7 +46,6 @@ public class ExcelToDatabaseImporter {
         Sheet sheet = workbook.getSheetAt(0);
         Iterator<Row> rowIterator = sheet.iterator();
 
-        // Пропускаем заголовочную строку
         if (rowIterator.hasNext()) {
             rowIterator.next();
         }
@@ -57,7 +56,6 @@ public class ExcelToDatabaseImporter {
             processExcelRow(row, dishMap);
         }
 
-        // Сохраняем все блюда
         for (Dish dish : dishMap.values()) {
             dishRepository.save(dish);
             logger.debug("Сохранено блюдо: {}", dish.getName());
@@ -110,10 +108,9 @@ public class ExcelToDatabaseImporter {
     private void addIngredientToDish(Row row, Dish dish) {
         String ingredientName = getCellStringValue(row.getCell(6));
         if (ingredientName == null || ingredientName.trim().isEmpty()) {
-            return; // В строке нет ингредиента
+            return;
         }
 
-        // Поиск или создание ингредиента
         Ingredient ingredient = ingredientRepository.findByNameIgnoreCase(ingredientName);
         if (ingredient == null) {
             ingredient = new Ingredient();
@@ -124,7 +121,6 @@ public class ExcelToDatabaseImporter {
             logger.debug("Создан новый ингредиент: {}", ingredientName);
         }
 
-        // Поиск или создание единицы измерения
         String measurementUnitName = getCellStringValue(row.getCell(9));
         MeasurementUnit measurementUnit = measurementUnitRepository.findByName(measurementUnitName);
         if (measurementUnit == null) {
@@ -135,13 +131,12 @@ public class ExcelToDatabaseImporter {
             logger.debug("Создана новая единица измерения: {}", measurementUnitName);
         }
 
-        // Создание связи DishIngredient
         DishIngredient dishIngredient = new DishIngredient();
         dishIngredient.setDish(dish);
         dishIngredient.setIngredient(ingredient);
         dishIngredient.setMeasurementUnit(measurementUnit);
         dishIngredient.setAmount(getCellIntegerValue(row.getCell(10)));
-        dishIngredient.setNotes(""); // Можно добавить логику для заметок, если требуется
+        dishIngredient.setNotes("");
 
         dish.getDishIngredients().add(dishIngredient);
     }
@@ -179,7 +174,6 @@ public class ExcelToDatabaseImporter {
     }
 
     private String getAbbreviationForUnit(String unitName) {
-        // Простая логика для сокращений, можно расширить
         switch (unitName.toLowerCase()) {
             case "граммы":
                 return "г";
@@ -193,55 +187,4 @@ public class ExcelToDatabaseImporter {
                 return unitName;
         }
     }
-//    public boolean isValidExcelFile(MultipartFile file) {
-//        return Objects.equals(file.getContentType(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-//    }
-//
-//    public static List<Dish> getDishDataFromExcel(InputStream inputStream) {
-//        List<Dish> dishes = new ArrayList<>();
-//        try {
-//            XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
-//            XSSFSheet sheetDish = workbook.getSheet("Dishes");
-//            MeasurementUnit measurementUnit = new MeasurementUnit();
-//            Ingredient ingredient = new Ingredient();
-//
-//            Dish dish = new Dish();
-//            List<DishIngredient> dishIngredients = new ArrayList<>();
-//            DishIngredient dishIngredient = new DishIngredient();
-//
-//            int rowIndexDishes = 0;
-//            for (Row row : sheetDish) {
-//                if (rowIndexDishes == 0) {
-//                    rowIndexDishes++;
-//                    continue;
-//                }
-//                Iterator<Cell> cellIterator = row.iterator();
-//                int cellIndexDishes = 0;
-//                while (cellIterator.hasNext()) {
-//                    Cell cell = cellIterator.next();
-//                    switch (cellIndexDishes) {
-//                        case 0 -> dish.setName(cell.getStringCellValue());
-//                        case 1 -> dish.setDescription(cell.getStringCellValue());
-//                        case 2 -> dish.setInstructions(cell.getStringCellValue());
-//                        case 3 -> dish.setCookingTime((int) cell.getNumericCellValue());
-//                        case 4-> dish.setDifficultyLevel(DifficultyLevel.valueOf(cell.getStringCellValue()));
-//                        case 5-> dish.setDishType(DishType.valueOf(cell.getStringCellValue()));
-//                        case 6 -> ingredient.setName(cell.getStringCellValue());
-//                        case 7 -> ingredient.setDescription(cell.getStringCellValue());
-//                        case 8 -> ingredient.setCategory(cell.getStringCellValue());
-//                        case 9 -> measurementUnit.setName(cell.getStringCellValue());
-//                        case 10 -> dishIngredient.setAmount((int) cell.getNumericCellValue());
-//
-//                    }
-//                    cellIndexDishes++;
-//                }
-//                dishIngredient.setDish(dish);
-//            }
-//
-//
-//        } catch (IOException e) {
-//            e.getStackTrace();
-//        }
-//        return dishes;
-
     }
