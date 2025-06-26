@@ -5,8 +5,8 @@ services:
     restart: always
     environment:
       POSTGRES_DB: refrigerator
-      POSTGRES_USER: OwnerRefrigerator
-      POSTGRES_PASSWORD: 898989
+      POSTGRES_USER: *yourName*
+      POSTGRES_PASSWORD: *yourPassword*
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -27,8 +27,8 @@ services:
         condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_db:5432/refrigerator
-      SPRING_DATASOURCE_USERNAME: OwnerRefrigerator
-      SPRING_DATASOURCE_PASSWORD: 898989
+      SPRING_DATASOURCE_USERNAME: *yourName*
+      SPRING_DATASOURCE_PASSWORD: *yourPassword*
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
     ports:
       - "8080:8080"
